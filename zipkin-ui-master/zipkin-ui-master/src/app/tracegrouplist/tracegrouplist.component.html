@@ -1,0 +1,31 @@
+<ul class="list-group">
+    <template ngFor let-group [ngForOf]="getGroupedTraces()">
+        <li class="list-group-item">
+            &nbsp;
+            <span class="col-sm-9">
+                        <template #tipContent>Trace <b>Hash Color</b><br></template>
+                        <span [ngbTooltip]="tipContent" placement="top" class="color-identifier" [style.background-color]="group.color" >&nbsp;</span>
+            <b>{{group.name}}</b>
+            </span>
+
+            <span class="label label-default">{{group.spans}} spans</span>
+        </li>
+        <template ngFor let-trace [ngForOf]="group.traces">
+            <li (click)=trace.toggleTrace() class="list-group-item list-group-item-action" style="cursor:pointer;border-left:10px solid #f0f0f0;">
+                &nbsp;
+                <span class="col-sm-5">
+                <b>{{trace.id}}</b>
+                </span>
+                <span class="col-sm-2">{{trace.formatTimestamp()}}</span>
+                <span class="col-sm-2">{{trace.formatDuration()}}</span>
+
+                <span class="col-sm-2">&nbsp;</span>
+
+            </li>
+            <li [hidden]="!trace.expanded" class="list-group-item" style="border-top:0px;border-left:10px solid #f0f0f0;">
+                <tracechart [trace]="trace"></tracechart>
+            </li>
+        </template>
+
+    </template>
+</ul>

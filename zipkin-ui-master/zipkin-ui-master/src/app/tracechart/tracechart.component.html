@@ -1,0 +1,88 @@
+<div>
+    <table class="table table-borderless " style="border:0px;">
+        <thead class="thead">
+            <tr>
+                <th class="col-md-2 service-name-header">Service</th>
+                <th class="col-md-9 span-line">Timeline</th>
+                <th class="col-md-1"></th>
+            </tr>
+            <tr>
+                <td class="col-md-2 service-name-header"></td>
+                <td class="col-md-9 span-line">
+                    <div class="span">
+                        <div class="timeline timeline1">{{time(0)}}</div>
+                        <div class="timeline timeline2">{{time(1)}}</div>
+                        <div class="timeline timeline3">{{time(2)}}</div>
+                        <div class="timeline timeline4">{{time(3)}}</div>
+                        <div class="timeline timeline5">{{time(4)}}</div>
+                        <div class="timeline timeline6">{{time(5)}}</div>
+                    </div>
+                </td>
+                <td class="col-md-1">
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let span of trace.spans">
+                <td class="col-md-2 service-name" [style.padding-left]="getSpanDepth(span)">
+                    <fa class="btn-service-expander-empty" *ngIf="span.children.length>0 && span.expanded" [name]="'chevron-down'"></fa>
+                    <fa class="btn-service-expander-empty" *ngIf="span.children.length>0 && !span.expanded" [name]="'chevron-right'"></fa>
+                    <div class="btn-service-expander-empty" *ngIf="span.children.length==0"></div>
+                    <a (click)="toggleSpan(span)" href="javascript:void(0)">{{formatServiceName(span)}}</a></td>
+                <td class="col-md-9  span-line">
+                    <div class="span">
+                        <div class="timeline timeline1"></div>
+                        <div class="timeline timeline2"></div>
+                        <div class="timeline timeline3"></div>
+                        <div class="timeline timeline4"></div>
+                        <div class="timeline timeline5"></div>
+                        <div class="timeline timeline6"></div>
+
+                        <template #content let-c="close" let-d="dismiss">
+                            <div class="modal-header">
+                                <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h4 class="modal-title">Span {{span.id}}</h4>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th>Annotation</th>
+                                        <th>Date Time</th>
+                                        <th>Relative Time</th>
+                                        <th>Address</th>
+                                    </tr>
+                                    <template ngFor let-annotation [ngForOf]="span.annotations">
+                                        <tr>
+                                            <td *ngIf="!annotation.isJson">{{formatAnnotation(annotation.value)}}</td>
+                                            <td *ngIf="annotation.isJson"><b>JSON</b></td>
+                                            <td>{{formatDateTime(annotation.timestamp)}}</td>
+                                            <td>{{formatRelativeTime(annotation.timestamp)}}</td>
+                                            <td>{{annotation.endpoint.ipv4}}:{{annotation.endpoint.port}} ({{annotation.endpoint.serviceName}})</td>
+                                        </tr>
+                                        <tr>
+                                            <td *ngIf="annotation.isJson" colspan="4">
+                                                <jsonviewer [json]="annotation.json"></jsonviewer>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button>
+                            </div>
+                        </template>
+
+                        <div [style.left]="getCs1(span)+'%'" [style.width]="getCs2(span)+'%'" class="waiting-left" (click)="open(content)">&nbsp;</div>
+                        <div [style.left]="getCr1(span)+'%'" [style.width]="getCr2(span)+'%'" class="waiting-right" (click)="open(content)">&nbsp;</div>
+                        <div [style.left]="getSr(span)+'%'" [style.width]="getSs(span)+'%'" class="server" (click)="open(content)">{{formatSpanInfo(span)}}</div>
+
+                        <div *ngFor="let annotation of getUserAnnotations(span)" [style.left]="getAnnotation(annotation)+'%'" class="annotation">&nbsp;</div>
+                    </div>
+                </td>
+                <td class="col-md-1"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
